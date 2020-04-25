@@ -2,25 +2,23 @@ import cv2
 import numpy as np
 
 
-def get_corners(img) -> np.ndarray:
+def get_corners(image: np.ndarray) -> np.ndarray:
     """
-
-    :param img:
-    :return:
+    Detects vertices in the given `image`.
     """
-    corners = cv2.goodFeaturesToTrack(img, 25, 0.01, 10)
+    corners = cv2.goodFeaturesToTrack(image, 25, 0.01, 10)
     return np.int0(corners)
 
 
-def get_edges(img) -> np.ndarray:
+def get_edges(image) -> np.ndarray:
     """
+    Detects edges (lines) in the given `image` using the probabilistic
+    Hough line transform.
 
-    :param img:
-    :return:
     """
-    img = img.astype(np.uint8)
-    mu, sigma = cv2.meanStdDev(img)
-    edges = cv2.Canny(img, mu - sigma, mu + sigma)
+    image = image.astype(np.uint8)
+    mu, sigma = cv2.meanStdDev(image)
+    edges = cv2.Canny(image, mu - sigma, mu + sigma)
     return cv2.HoughLinesP(
         edges,
         rho=1,
