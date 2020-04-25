@@ -1,4 +1,5 @@
 import math
+from typing import Optional, Tuple
 
 import cv2
 import numpy as np
@@ -9,16 +10,18 @@ from . import (
 )
 
 
-def process_molecule_image(filename: str):
+def process_molecule_image(filename: str)\
+        -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+
+    :param filename:
+    :return:
+    """
     img = cv2.imread(filename)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = np.float32(gray)
 
     corners = feature_detection.get_corners(gray)
-
-    for i in corners:
-        x, y = i.ravel()
-        cv2.circle(img, (x, y), 3, 255, -1)
 
     lines = feature_detection.get_edges(gray)
 
@@ -28,17 +31,21 @@ def process_molecule_image(filename: str):
         min_line_dist=20.
     )
 
-    for line in lines:
-        for x1, y1, x2, y2 in line:
-            cv2.line(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
-
-    return img
+    return img, corners, lines
 
 
 def remove_parallel_edges(
         edges,
         gradient_tolerance: float = 0.1,
-        min_line_dist: float = 10.):
+        min_line_dist: float = 10.
+) -> np.ndarray:
+    """
+
+    :param edges:
+    :param gradient_tolerance:
+    :param min_line_dist:
+    :return:
+    """
     coords = [edge[0] for edge in edges]
 
     # TODO: vectorize these computations
@@ -56,13 +63,20 @@ def remove_parallel_edges(
         for jj, edge2 in enumerate(coords[ii + 1:], ii + 1):
             if not keep[jj]:
                 continue
+
             grad = gradients[ii]
+
+            dist: Optional[float] = None
             if math.isclose(grad, gradients[jj], abs_tol=gradient_tolerance):
                 dist = line_utils.calculate_parallel_distance(
                     intercepts[ii], intercepts[jj], grad)
-                if dist <= min_line_dist:
-                    # Keep longest segment
-                    idx = ii if lengths[ii] < lengths[jj] else jj
-                    keep[idx] = False
+            elif math.isnan(grad) and math.isnan(gradients[jj]):
+                # Vertical lines
+                dist = abs(edge1[0] - edge2[0])
+
+            if dist is not None and dist <= min_line_dist:
+                # Keep longest segment
+                idx = ii if lengths[ii] < lengths[jj] else jj
+                keep[idx] = False
 
     return edges[keep]
