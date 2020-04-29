@@ -2,6 +2,8 @@ import unittest
 
 from .shapes import ShapeImage
 
+# TODO: rotation_angle tests
+
 
 class TestShapeImage(unittest.TestCase):
     def setUp(self):
