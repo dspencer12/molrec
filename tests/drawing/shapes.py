@@ -16,11 +16,13 @@ class ShapeImage(np.ndarray):
     A subclass of np.ndarray to represent an image, including public methods
     to draw lines/shapes on the image.
 
-    This method subclasses np.ndarray in order to behave as an ndarray for
-    purposes such as plotting using matplotlib.pyplot.imshow. The subclass
-    method is specific for this class (see
+    This method subclasses np.ndarray in order to behave as an ndarray. The
+    subclass method is specific for this class (see
     https://docs.scipy.org/doc/numpy-1.13.0/user/basics.subclassing.html for
     full justification of the class structure).
+
+    If a new image is to be created, the `new` method should be used to
+    simultaneously initialize a new, blank image array.
 
     """
     def __new__(
@@ -72,6 +74,7 @@ class ShapeImage(np.ndarray):
             self,
             coords: List[utils.PixelCoord],
             colour: Optional[utils.RGBColour] = None,
+            rotation_angle: float = 0.,
             **kwargs
     ) -> ShapeImage:
         """
@@ -82,26 +85,35 @@ class ShapeImage(np.ndarray):
             coords: List of (x, y) vertex coordinates.
             colour: Line colour in RGB format.
                     Defaults to ShapeImage.default_colour.
+            rotation_angle: Clockwise coordinate rotation angle (around shape
+                            center) in radians. Defaults to zero.
             kwargs: Additional keyword arguments for cv2.line.
 
         Returns:
             ShapeImage.
 
         """
-        for coord in coords:
-            if (coord[0] < 0 or coord[0] > self.shape[0] or coord[1] < 0 or
-                    coord[1] > self.shape[1]):
+        transformed = np.array(coords, dtype='int64')
+        average = utils.get_average_point(transformed)
+        transformed = utils.rotate_coordinates(
+            transformed,
+            rotation_angle,
+            point=average
+        )
+
+        for x, y in transformed:
+            if x < 0 or x > self.shape[0] or y < 0 or y > self.shape[1]:
                 raise ValueError(
-                    f'Image coordinate {coord} out of bounds for image of size '
-                    f'{self.shape}'
+                    f'Transformed image coordinate {(x, y)} out of bounds for '
+                    f'image of size {self.shape}'
                 )
 
-        for ii, coord in enumerate(coords):
-            next_index = ii + 1 if ii + 1 < len(coords) else 0
+        for ii, coord in enumerate(transformed):
+            next_index = ii + 1 if ii + 1 < len(transformed) else 0
             cv2.line(
                 self,
-                coord,
-                coords[next_index],
+                tuple(coord),
+                tuple(transformed[next_index]),
                 tuple(reversed(colour or self.default_colour)),
                 **kwargs
             )
@@ -141,6 +153,7 @@ class ShapeImage(np.ndarray):
             height: int,
             start_coord: utils.PixelCoord = (0, 0),
             colour: Optional[utils.RGBColour] = None,
+            rotation_angle: float = 0.,
             **kwargs
     ) -> ShapeImage:
         """
@@ -153,6 +166,8 @@ class ShapeImage(np.ndarray):
                          Defaults to (0, 0).
             colour: Line colour in RGB format.
                     Defaults to ShapeImage.default_colour.
+            rotation_angle: Clockwise coordinate rotation angle (around shape
+                            center) in radians. Defaults to zero.
 
         Returns:
             ShapeImage.
@@ -166,6 +181,7 @@ class ShapeImage(np.ndarray):
                 (start_coord[0], start_coord[1] + height)
             ],
             colour=colour,
+            rotation_angle=rotation_angle,
             **kwargs
         )
 
@@ -174,6 +190,7 @@ class ShapeImage(np.ndarray):
             length: int,
             start_coord: utils.PixelCoord = (0, 0),
             colour: Optional[utils.RGBColour] = None,
+            rotation_angle: float = 0.,
             **kwargs
     ) -> ShapeImage:
         """
@@ -185,6 +202,8 @@ class ShapeImage(np.ndarray):
                          Defaults to (0, 0).
             colour: Line colour in RGB format.
                     Defaults to ShapeImage.default_colour.
+            rotation_angle: Clockwise coordinate rotation angle (around shape
+                            center) in radians. Defaults to zero.
 
         Returns:
             ShapeImage.
@@ -195,6 +214,7 @@ class ShapeImage(np.ndarray):
             length,
             start_coord=start_coord,
             colour=colour,
+            rotation_angle=rotation_angle,
             **kwargs
         )
 
@@ -206,6 +226,7 @@ class ShapeImage(np.ndarray):
             length: int,
             start_coord: Optional[utils.PixelCoord] = None,
             colour: Optional[utils.RGBColour] = None,
+            rotation_angle: float = 0.,
             **kwargs
     ) -> ShapeImage:
         """
@@ -217,6 +238,8 @@ class ShapeImage(np.ndarray):
                          Defaults to (0, length / 2).
             colour: Line colour in RGB format.
                     Defaults to ShapeImage.default_colour.
+            rotation_angle: Clockwise coordinate rotation angle (around shape
+                            center) in radians. Defaults to zero.
 
         Returns:
             ShapeImage.
@@ -236,5 +259,6 @@ class ShapeImage(np.ndarray):
                 (start_coord[0], start_coord[1] + length)
             ],
             colour=colour,
+            rotation_angle=rotation_angle,
             **kwargs
         )
