@@ -85,8 +85,8 @@ class ShapeImage(np.ndarray):
             coords: List of (x, y) vertex coordinates.
             colour: Line colour in RGB format.
                     Defaults to ShapeImage.default_colour.
-            rotation_angle: Clockwise coordinate rotation angle (around shape
-                            center) in radians. Defaults to zero.
+            rotation_angle: Anticlockwise coordinate rotation angle (around
+                            shape center) in radians. Defaults to zero.
             kwargs: Additional keyword arguments for cv2.line.
 
         Returns:
@@ -125,6 +125,7 @@ class ShapeImage(np.ndarray):
             start: utils.PixelCoord,
             end: utils.PixelCoord,
             colour: Optional[utils.RGBColour] = None,
+            rotation_angle: float = 0.,
             **kwargs
     ) -> ShapeImage:
         """
@@ -135,6 +136,8 @@ class ShapeImage(np.ndarray):
             end: Endpoint of the line.
             colour: Line colour in RGB format.
                     Defaults to ShapeImage.default_colour.
+            rotation_angle: Anticlockwise coordinate rotation angle (around
+                            shape center) in radians. Defaults to zero.
             kwargs: Additional keyword arguments for cv2.line.
 
         Returns:
@@ -144,6 +147,7 @@ class ShapeImage(np.ndarray):
         return self.add_shape(
             [start, end],
             colour=colour,
+            rotation_angle=rotation_angle,
             **kwargs
         )
 
@@ -166,8 +170,8 @@ class ShapeImage(np.ndarray):
                          Defaults to (0, 0).
             colour: Line colour in RGB format.
                     Defaults to ShapeImage.default_colour.
-            rotation_angle: Clockwise coordinate rotation angle (around shape
-                            center) in radians. Defaults to zero.
+            rotation_angle: Anticlockwise coordinate rotation angle (around
+                            shape center) in radians. Defaults to zero.
 
         Returns:
             ShapeImage.
@@ -202,8 +206,8 @@ class ShapeImage(np.ndarray):
                          Defaults to (0, 0).
             colour: Line colour in RGB format.
                     Defaults to ShapeImage.default_colour.
-            rotation_angle: Clockwise coordinate rotation angle (around shape
-                            center) in radians. Defaults to zero.
+            rotation_angle: Anticlockwise coordinate rotation angle (around
+                            shape center) in radians. Defaults to zero.
 
         Returns:
             ShapeImage.
@@ -238,8 +242,8 @@ class ShapeImage(np.ndarray):
                          Defaults to (0, length / 2).
             colour: Line colour in RGB format.
                     Defaults to ShapeImage.default_colour.
-            rotation_angle: Clockwise coordinate rotation angle (around shape
-                            center) in radians. Defaults to zero.
+            rotation_angle: Anticlockwise coordinate rotation angle (around
+                            shape center) in radians. Defaults to zero.
 
         Returns:
             ShapeImage.
