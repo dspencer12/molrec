@@ -73,32 +73,32 @@ class TestRotateCoordinates(unittest.TestCase):
         np.testing.assert_array_equal(coords, transformed)
 
     def test_line_origin_90(self):
-        """Tests coordinate rotation of the endpoints of a line 90 degrees about
-        the origin."""
+        """Tests coordinate rotation of the endpoints of a line 90 degrees
+        clockwise about the origin."""
         coords = utils.rotate_coordinates(
             np.array([
                 [1, 1],
                 [2, 2]
             ]),
-            math.pi / 2
+            -math.pi / 2
         )
         np.testing.assert_array_equal(
             np.array([
-                [1, -1],
-                [2, -2]
+                [-1, 1],
+                [-2, 2]
             ]),
             coords
         )
 
     def test_line_origin_180(self):
         """Tests coordinate rotation of the endpoints of a line 180 degrees
-        about the origin."""
+        clockwise about the origin."""
         coords = utils.rotate_coordinates(
             np.array([
                 [1, 1],
                 [2, 2]
             ]),
-            math.pi
+            -math.pi
         )
         np.testing.assert_array_equal(
             np.array([
@@ -110,18 +110,18 @@ class TestRotateCoordinates(unittest.TestCase):
 
     def test_line_origin_270(self):
         """Tests coordinate rotation of the endpoints of a line 270 degrees
-        about the origin."""
+        clockwise about the origin."""
         coords = utils.rotate_coordinates(
             np.array([
                 [1, 1],
                 [2, 2]
             ]),
-            - math.pi / 2
+            - (3 * math.pi) / 2
         )
         np.testing.assert_array_equal(
             np.array([
-                [-1, 1],
-                [-2, 2]
+                [1, -1],
+                [2, -2]
             ]),
             coords
         )
@@ -140,8 +140,8 @@ class TestRotateCoordinates(unittest.TestCase):
         )
         np.testing.assert_array_equal(coords, transformed)
 
-    def test_line_midpoint_90(self):
-        """Tests the coordinate rotation of the endpoints of a line 90 degrees
+    def test_line_midpoint_45(self):
+        """Tests the coordinate rotation of the endpoints of a line 45 degrees
         about its midpoint."""
         coords = np.array([
             [1, 1],
@@ -149,27 +149,47 @@ class TestRotateCoordinates(unittest.TestCase):
         ])
         transformed = utils.rotate_coordinates(
             coords,
-            math.pi / 2,
+            -math.pi / 4,
             point=utils.get_average_point(coords)
         )
         np.testing.assert_array_equal(
             np.array([
-                [1, 3],
-                [3, 1]
+                [2, 1],
+                [2, 3]
+            ]),
+            transformed
+        )
+
+    def test_line_midpoint_90(self):
+        """Tests the coordinate rotation of the endpoints of a line 90 degrees
+        clockwise about its midpoint."""
+        coords = np.array([
+            [1, 1],
+            [3, 3]
+        ])
+        transformed = utils.rotate_coordinates(
+            coords,
+            -math.pi / 2,
+            point=utils.get_average_point(coords)
+        )
+        np.testing.assert_array_equal(
+            np.array([
+                [3, 1],
+                [1, 3]
             ]),
             transformed
         )
 
     def test_line_midpoint_180_rounded(self):
         """Tests the coordinate rotation of the endpoints of a line 180 degrees
-        about its midpoint."""
+        clockwise about its midpoint."""
         coords = np.array([
             [1, 1],
             [2, 2]
         ])
         transformed = utils.rotate_coordinates(
             coords,
-            math.pi,
+            -math.pi,
             point=utils.get_average_point(coords)
         )
         # Note that because of working with integer coordinates, the midpoint
@@ -185,14 +205,14 @@ class TestRotateCoordinates(unittest.TestCase):
 
     def test_line_midpoint_180(self):
         """Tests the coordinate rotation of the endpoints of a line 180 degrees
-        about its midpoint."""
+        clockwise about its midpoint."""
         coords = np.array([
             [1, 1],
             [3, 3]
         ])
         transformed = utils.rotate_coordinates(
             coords,
-            math.pi,
+            -math.pi,
             point=utils.get_average_point(coords)
         )
         np.testing.assert_array_equal(
@@ -205,20 +225,20 @@ class TestRotateCoordinates(unittest.TestCase):
 
     def test_line_midpoint_270(self):
         """Tests the coordinate rotation of the endpoints of a line 270 degrees
-        about its midpoint."""
+        clockwise about its midpoint."""
         coords = np.array([
             [1, 1],
             [3, 3]
         ])
         transformed = utils.rotate_coordinates(
             coords,
-            - math.pi / 2,
+            - (3 * math.pi) / 2,
             point=utils.get_average_point(coords)
         )
         np.testing.assert_array_equal(
             np.array([
-                [3, 1],
-                [1, 3]
+                [1, 3],
+                [3, 1]
             ]),
             transformed
         )
