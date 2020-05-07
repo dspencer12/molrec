@@ -50,7 +50,6 @@ def remove_parallel_edges(
 
     """
     coords = [edge[0] for edge in edges]
-    print(coords)
 
     # TODO: vectorise these computations
     lengths = [line_utils.calculate_segment_length(*a.T) for a in coords]
@@ -95,7 +94,6 @@ def remove_parallel_edges(
                         )
                         if dist <= max_line_dist:
                             # Keep longest segment
-                            print(dist, edge1, edge2)
                             idx = ii if lengths[ii] < lengths[jj] else jj
                             keep[idx] = False
                             break
