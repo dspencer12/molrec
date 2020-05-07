@@ -5,7 +5,9 @@ from molrec.molecule_detection.line_utils import (
     calculate_gradient,
     calculate_intercept,
     calculate_segment_length,
+    calculate_midpoint,
     calculate_parallel_distance,
+    calculate_point_segment_distance,
 )
 
 
@@ -47,6 +49,20 @@ class TestSegmentLength(unittest.TestCase):
                 self.assertEqual(length, calculate_segment_length(*coords))
 
 
+class TestSegmentMidpoint(unittest.TestCase):
+    def test_positive_gradient(self):
+        self.assertEqual((1.5, 1.5), calculate_midpoint(1, 1, 2, 2))
+
+    def test_negative_gradient(self):
+        self.assertEqual((0., 0.), calculate_midpoint(1, 1, -1, -1))
+
+    def test_vertical(self):
+        self.assertEqual((1, 2), calculate_midpoint(1, 1, 1, 3))
+
+    def test_horizontal(self):
+        self.assertEqual((2, 1), calculate_midpoint(1, 1, 3, 1))
+
+
 class TestParallelDistance(unittest.TestCase):
     def test_sloped_lines(self):
         self.assertAlmostEqual(
@@ -61,6 +77,26 @@ class TestParallelDistance(unittest.TestCase):
     def test_vertical_line(self):
         self.assertTrue(
             math.isnan(calculate_parallel_distance(1., 2., math.nan))
+        )
+
+
+class TestPointSegmentDistance(unittest.TestCase):
+    def test_point_on_segment(self):
+        self.assertEqual(
+            0.,
+            calculate_point_segment_distance((1., 1.), (2., 2.), (1.5, 1.5))
+        )
+
+    def test_segment_is_point(self):
+        self.assertEqual(
+            1.,
+            calculate_point_segment_distance((1., 1.), (1., 1.), (2., 1.))
+        )
+
+    def test_point_on_line_outside_segment(self):
+        self.assertEqual(
+            2 ** 0.5,
+            calculate_point_segment_distance((1., 1.), (4., 4.), (5., 5.))
         )
 
 
