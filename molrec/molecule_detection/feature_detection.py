@@ -1,4 +1,5 @@
 import math
+from typing import Set, Tuple
 
 import cv2
 import numpy as np
@@ -10,7 +11,7 @@ class DetectionError(Exception):
     """General exception for problems during feature detection."""
 
 
-def get_corners(
+def detect_corners(
         image: np.ndarray,
         max_corners: int = 1000,
         quality_level: float = 0.3,
@@ -28,6 +29,39 @@ def get_corners(
     if corners is None:
         raise DetectionError('No vertices detected in image.')
     return np.around(corners).astype('int64')
+
+
+def test_coords_close(
+        a: Tuple[int, int],
+        b: Tuple[int, int],
+        tol: int
+) -> bool:
+    """
+    Determines whether coordinates `a` and `b` lie within `tol` of one another.
+
+    This test is based on the Cartesian distance between the two coordinates.
+
+    """
+    return line_utils.calculate_point_distance(a, b) <= tol
+
+
+def get_vertices_from_edges(
+        edges: np.ndarray,
+        tolerance: int = 10
+):
+    """
+    Identifies unique vertices, within `tolerance`, based on the detected edges.
+
+    """
+    vertices: Set[Tuple[int, int]] = set()
+    for edge in edges:
+        for vertex in [tuple(edge[0, :2]), tuple(edge[0, 2:])]:
+            if not any(test_coords_close(vertex, v, tolerance)
+                       for v in vertices):
+                vertices.add(vertex)
+    # This return format mimics the corner detection format from
+    # cv2.goodFeaturesToTrack
+    return np.array([[v] for v in vertices])
 
 
 def remove_parallel_edges(
@@ -101,7 +135,7 @@ def remove_parallel_edges(
     return edges[keep]
 
 
-def get_edges(
+def detect_edges(
     image: np.ndarray,
     remove_parallel: bool = True,
     **kwargs

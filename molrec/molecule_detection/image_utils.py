@@ -15,7 +15,7 @@ def annotate_image(image, corners=None, lines=None):
     if corners is not None:
         for i in corners:
             x, y = i.ravel()
-            cv2.circle(image, (x, y), 3, 255, -1)
+            cv2.circle(image, (x, y), 10, 255, -1)
 
     if lines is not None:
         for line in lines:

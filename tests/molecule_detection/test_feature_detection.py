@@ -6,8 +6,9 @@ import cv2
 import numpy as np
 
 from molrec.molecule_detection.feature_detection import (
-    get_corners,
-    get_edges,
+    detect_corners,
+    detect_edges,
+    get_vertices_from_edges,
     remove_parallel_edges
 )
 from tests.drawing import ShapeImage
@@ -120,7 +121,7 @@ class TestParallelLineRemoval(unittest.TestCase):
         )
 
 
-class TestShapeCornerAndEdgeDetection(unittest.TestCase):
+class _BaseShapeTest(unittest.TestCase):
     bg_colour = (255, 255, 255)
     line_colour = (0, 0, 0)
 
@@ -155,14 +156,7 @@ class TestShapeCornerAndEdgeDetection(unittest.TestCase):
         drawer(image)
         grey = to_grey(image)
 
-        corners = get_corners(grey)
-        self.assertEqual(expected_corners.shape[0], corners.shape[0])
-        assert_allclose_unsorted(
-            expected_corners,
-            corners,
-            atol=5
-        )
-
+        edges = detect_edges(grey)
         if expected_edges is None:
             # Identify expected edges by assuming connectivity between adjacent
             # vertices
@@ -178,13 +172,19 @@ class TestShapeCornerAndEdgeDetection(unittest.TestCase):
                     expected_edges.append(((*coord[0], *next_coord[0]),))
             expected_edges = np.array(expected_edges)
 
-        edges = get_edges(grey)
         self.assertEqual(expected_edges.shape[0], edges.shape[0])
-        print(expected_edges.shape, edges.shape)
         assert_lines_allclose_unsorted(
             expected_edges,
             edges,
             atol=20
+        )
+
+        corners = get_vertices_from_edges(edges)
+        self.assertEqual(expected_corners.shape[0], corners.shape[0])
+        assert_allclose_unsorted(
+            expected_corners,
+            corners,
+            atol=10
         )
 
     def _test_line(
@@ -216,6 +216,7 @@ class TestShapeCornerAndEdgeDetection(unittest.TestCase):
     ):
         """
         """
+
         def draw(image: ShapeImage):
             for s, e in line_coords:
                 image.add_line(s, e)
@@ -236,6 +237,8 @@ class TestShapeCornerAndEdgeDetection(unittest.TestCase):
             ])
         )
 
+
+class TestShapeCornerAndEdgeDetection(_BaseShapeTest):
     def test_line_unit_gradient(self):
         """2 'corners' should be detected for a line with unit gradient."""
         self._test_line((1000, 1000), (100, 100), (900, 900))
@@ -448,9 +451,7 @@ class TestShapeCornerAndEdgeDetectionBlueOnBlack(
     line_colour = (255, 255, 255)
 
 
-class TestGeneratedMoleculeCornerAndEdgeDetection(
-    TestShapeCornerAndEdgeDetection
-):
+class TestGeneratedMoleculeCornerAndEdgeDetection(_BaseShapeTest):
     def test_cyclohexane(self):
         """Tests that 6 corners and 6 edges are detected for cyclohexane."""
         self._test_shape(
@@ -490,7 +491,7 @@ class TestGeneratedMoleculeCornerAndEdgeDetection(
             ]),
             drawer=draw,
             expected_edges=np.array([
-                [[400, 400, 487, 250]],
+                [[400, 400, 487, 350]],
                 [[487, 350, 574, 400]],
                 [[574, 400, 574, 500]],
                 [[574, 500, 487, 550]],

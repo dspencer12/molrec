@@ -1,22 +1,6 @@
 import numpy as np
 
 
-def sort_coords(a: np.ndarray):
-    """
-    Sorts an array based on the first element of the second axis.
-
-    Sorts lexically based on the first, then second, columns of each coordinate.
-
-    Args:
-        a: Array to sort.
-
-    Returns:
-        Sorted array.
-
-    """
-    return a[np.lexsort((a[:, 0, 0], a[:, 0, 1]))]
-
-
 def assert_allclose_unsorted(array1: np.ndarray, array2: np.ndarray, **kwargs):
     """
     Asserts that two ndarrays are approximately equal, independent of the order
@@ -28,11 +12,16 @@ def assert_allclose_unsorted(array1: np.ndarray, array2: np.ndarray, **kwargs):
         kwargs: Other arguments for np.testing.assert_allclose.
 
     """
-    np.testing.assert_allclose(
-        sort_coords(array1),
-        sort_coords(array2),
-        **kwargs
-    )
+    for coord1 in array1:
+        for coord2 in array2:
+            try:
+                np.testing.assert_allclose(coord1, coord2, **kwargs)
+            except AssertionError:
+                pass
+            else:
+                break
+        else:
+            raise AssertionError(f'Segment {coord1} not found in {array2}')
 
 
 def assert_lines_allclose_unsorted(
