@@ -14,8 +14,8 @@ def process_molecule_image(filename: str)\
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = np.float32(gray)
 
-    corners = feature_detection.get_corners(gray)
+    lines = feature_detection.detect_edges(gray, remove_parallel=True)
 
-    lines = feature_detection.get_edges(gray, remove_parallel=True)
+    corners = feature_detection.get_vertices_from_edges(lines)
 
     return img, corners, lines
