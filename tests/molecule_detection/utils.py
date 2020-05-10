@@ -21,7 +21,7 @@ def assert_allclose_unsorted(array1: np.ndarray, array2: np.ndarray, **kwargs):
             else:
                 break
         else:
-            raise AssertionError(f'Segment {coord1} not found in {array2}')
+            raise AssertionError(f'Vertex {coord1} not found in {array2}')
 
 
 def assert_lines_allclose_unsorted(
