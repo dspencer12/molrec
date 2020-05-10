@@ -6,7 +6,6 @@ import cv2
 import numpy as np
 
 from molrec.molecule_detection.feature_detection import (
-    detect_corners,
     detect_edges,
     get_vertices_from_edges,
     remove_parallel_edges
@@ -449,58 +448,6 @@ class TestShapeCornerAndEdgeDetectionBlueOnBlack(
 ):
     bg_colour = (0, 0, 255)
     line_colour = (255, 255, 255)
-
-
-class TestGeneratedMoleculeCornerAndEdgeDetection(_BaseShapeTest):
-    def test_cyclohexane(self):
-        """Tests that 6 corners and 6 edges are detected for cyclohexane."""
-        self._test_shape(
-            image_size=(1000, 1000),
-            expected_corners=np.array([
-                [[400, 400]],
-                [[487, 350]],
-                [[574, 400]],
-                [[574, 500]],
-                [[487, 550]],
-                [[400, 500]]
-            ]),
-            drawer=lambda image: image.add_regular_hexagon(
-                100, start_coord=(400, 400)
-            )
-        )
-
-    def test_methylcyclohexane(self):
-        """Tests that 7 corners and 7 edges are detected for cyclohexane."""
-        def draw(image: ShapeImage):
-            image.add_regular_hexagon(
-                100, start_coord=(400, 400)
-            )
-            image.add_line((487, 350), (487, 250))
-
-        self._test_shape(
-            image_size=(1000, 1000),
-            expected_corners=np.array([
-                [[400, 400]],
-                [[487, 350]],
-                [[574, 400]],
-                [[574, 500]],
-                [[487, 550]],
-                [[400, 500]],
-                # Methyl group
-                [[487, 250]]
-            ]),
-            drawer=draw,
-            expected_edges=np.array([
-                [[400, 400, 487, 350]],
-                [[487, 350, 574, 400]],
-                [[574, 400, 574, 500]],
-                [[574, 500, 487, 550]],
-                [[487, 550, 400, 500]],
-                [[400, 500, 400, 400]],
-                # To methyl group
-                [[487, 350, 487, 250]]
-            ])
-        )
 
 
 if __name__ == '__main__':
