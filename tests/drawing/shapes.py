@@ -120,6 +120,35 @@ class ShapeImage(np.ndarray):
 
         return self
 
+    def add_text(
+            self,
+            text: str,
+            pos: utils.PixelCoord,
+            font: int = cv2.FONT_HERSHEY_SIMPLEX,
+            font_scale: int = 1,
+            font_colour: utils.RGBColour = (0, 0, 0),
+            **kwargs
+    ) -> ShapeImage:
+        """
+        Adds `text` to the image.
+
+        Args:
+            text: The text string to insert in the image.
+            pos: The coordinate of the bottom left text corner.
+            font:
+            font_scale:
+            font_colour:
+            kwargs: Extra arguments for cv2.putText.
+
+        Returns:
+            ShapeImage.
+
+        """
+        cv2.putText(
+            self, text, pos, font, font_scale, *reversed(font_colour), **kwargs
+        )
+        return self
+
     def add_line(
             self,
             start: utils.PixelCoord,

@@ -41,6 +41,10 @@ class TestShapeImage(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.image.add_line((0, 0), (1000, 1001))
 
+    def test_text(self):
+        image = self.image.add_text('Test Text', (600, 600))
+        self.assertIsInstance(image, ShapeImage)
+
 
 if __name__ == '__main__':
     unittest.main()
