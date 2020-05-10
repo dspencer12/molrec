@@ -129,7 +129,8 @@ class _BaseShapeTest(unittest.TestCase):
             image_size: Tuple[int, int],
             expected_corners: np.ndarray,
             drawer: Callable[[ShapeImage], None],
-            expected_edges: Optional[np.ndarray] = None
+            expected_edges: Optional[np.ndarray] = None,
+            vertex_atol: int = 10
     ):
         """
         Tests whether the expected vertex coordinates and edges are detected for
@@ -178,12 +179,12 @@ class _BaseShapeTest(unittest.TestCase):
             atol=20
         )
 
-        corners = get_vertices_from_edges(edges)
+        corners = get_vertices_from_edges(edges, image_size)
         self.assertEqual(expected_corners.shape[0], corners.shape[0])
         assert_allclose_unsorted(
             expected_corners,
             corners,
-            atol=10
+            atol=vertex_atol
         )
 
     def _test_line(

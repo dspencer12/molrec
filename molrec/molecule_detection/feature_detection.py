@@ -1,5 +1,5 @@
 import math
-from typing import Optional, Set, Tuple
+from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -47,18 +47,27 @@ def test_coords_close(
 
 def get_vertices_from_edges(
         edges: np.ndarray,
-        tolerance: int = 10
+        image_size: Tuple[int, int],
+        tolerance: Optional[int] = None
 ):
     """
-    Identifies unique vertices, within `tolerance`, based on the detected edges.
+    Identifies unique vertices based on the `edges`.
+
+    If `tolerance` is not provided, it is defined adaptively based on
+    `image_size`.
 
     """
-    vertices: Set[Tuple[int, int]] = set()
+    if tolerance is None:
+        tolerance = image_size[0] / 50
+
+    vertices: List[Tuple[int, int]] = []
     for edge in edges:
+        # TODO: Should the average vertex coordinate be kept, rather than the
+        #  first encountered?
         for vertex in [tuple(edge[0, :2]), tuple(edge[0, 2:])]:
             if not any(test_coords_close(vertex, v, tolerance)
                        for v in vertices):
-                vertices.add(vertex)
+                vertices.append(vertex)
     # This return format mimics the corner detection format from
     # cv2.goodFeaturesToTrack
     return np.array([[v] for v in vertices])

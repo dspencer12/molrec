@@ -174,6 +174,30 @@ class TestGeneratedMoleculeCornerAndEdgeDetection(_BaseShapeTest):
             ])
         )
 
+    def test_ethyne(self):
+        """
+        Tests that 2 vertices and 3 lines are detected for ethyne.
+
+        """
+        def draw(image: ShapeImage):
+            image.add_line((400, 400), (500, 400))
+            image.add_line((400, 410), (500, 410))
+            image.add_line((400, 420), (500, 420))
+
+        self._test_shape(
+            image_size=(1000, 1000),
+            expected_corners=np.array([
+                [[400, 400]],
+                [[500, 400]]
+            ]),
+            drawer=draw,
+            expected_edges=np.array([
+                [[400, 400, 500, 400]],
+                [[400, 410, 500, 410]],
+                [[400, 420, 500, 420]]
+            ])
+        )
+
     def test_propene(self):
         """
         Tests that 3 vertices and 3 lines are detected for propene.
@@ -225,6 +249,43 @@ class TestGeneratedMoleculeCornerAndEdgeDetection(_BaseShapeTest):
                 [[500, 400, 587, 350]],
                 [[500, 400, 587, 450]]
             ])
+        )
+
+    def test_benzene(self):
+        """
+        Tests that 6 vertices and 9 edges are detected for benzene.
+
+        """
+        def draw(image: ShapeImage):
+            image.add_regular_hexagon(100, start_coord=(400, 400))
+            image.add_line((415, 405), (487, 364))
+            image.add_line((415, 495), (487, 536))
+            image.add_line((559, 409), (559, 491))
+
+        self._test_shape(
+            image_size=(1000, 1000),
+            expected_corners=np.array([
+                [[400, 400]],
+                [[487, 350]],
+                [[574, 400]],
+                [[574, 500]],
+                [[487, 550]],
+                [[400, 500]]
+            ]),
+            drawer=draw,
+            expected_edges=np.array([
+                [[400, 400, 487, 350]],
+                [[487, 350, 574, 400]],
+                [[574, 400, 574, 500]],
+                [[574, 500, 487, 550]],
+                [[487, 550, 400, 500]],
+                [[400, 500, 400, 400]],
+                # "Double" bonds
+                [[415, 405, 487, 364]],
+                [[415, 495, 487, 536]],
+                [[559, 409, 559, 491]]
+            ]),
+            vertex_atol=15
         )
 
 
