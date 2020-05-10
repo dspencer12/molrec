@@ -1,5 +1,5 @@
 import math
-from typing import Set, Tuple
+from typing import Optional, Set, Tuple
 
 import cv2
 import numpy as np
@@ -138,11 +138,19 @@ def remove_parallel_edges(
 def detect_edges(
     image: np.ndarray,
     remove_parallel: bool = True,
-    **kwargs
+    max_line_dist: Optional[float] = None
 ) -> np.ndarray:
     """
     Detects edges (lines) in the given `image` using the probabilistic
     Hough line transform.
+
+    Args:
+        image: The image array.
+        remove_parallel: Flag indicating whether nearby parallel edges should be
+                         filtered.
+        max_line_dist: Maximum distance between lines for them to be considered
+                       adjacent to one another. Defaults to the x-size of the
+                       image divided by 200.
 
     """
     image = image.astype(np.uint8)
@@ -158,6 +166,8 @@ def detect_edges(
     lines = np.around(lines).astype('int64')
 
     if remove_parallel:
-        lines = remove_parallel_edges(lines, **kwargs)
+        if max_line_dist is None:
+            max_line_dist = image.shape[0] / 200
+        lines = remove_parallel_edges(lines, max_line_dist=max_line_dist)
 
     return lines
