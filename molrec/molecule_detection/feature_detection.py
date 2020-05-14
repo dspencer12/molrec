@@ -58,7 +58,7 @@ def get_vertices_from_edges(
 
     """
     if tolerance is None:
-        tolerance = image_size[0] / 50
+        tolerance = image_size[0] // 50
 
     vertices: List[Tuple[int, int]] = []
     for edge in edges:
