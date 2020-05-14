@@ -26,7 +26,8 @@ def east_detection(
         apply_suppression: Whether to perform non-maximal suppression.
 
     Returns:
-        Numpy array containing the four coordinates of each bounding box.
+        Numpy array containing the coordinates of the start and end points of
+        each bounding box.
 
     """
     # Define the two output layer names for the EAST detector model in which
@@ -91,7 +92,7 @@ def east_detection(
             rects.append((start_x, start_y, end_x, end_y))
             confidences.append(scores_data[x])
 
-    if apply_suppression:
+    if apply_suppression and rects:
         # Apply non-maximal suppression to suppress weak, overlapping bounding
         # boxes
         # Note that NMSBoxes is very fussy about its inputs:
@@ -100,9 +101,11 @@ def east_detection(
             [list(r) for r in rects],
             [float(c) for c in confidences],
             min_confidence,
-            0.1
+            # I have no idea how this threshold works... higher appears to
+            # retain more boxes
+            nms_threshold=0.4
         )
-        rects = np.array(rects)[indices[0]]
+        rects = np.array(rects)[indices[:, 0]]
     else:
         rects = np.array(rects)
 
