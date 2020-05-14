@@ -134,7 +134,7 @@ class ShapeImage(np.ndarray):
 
         Args:
             text: The text string to insert in the image.
-            pos: The coordinate of the bottom left text corner.
+            pos: The coordinate of the top left text corner.
             font:
             font_scale:
             font_colour:
