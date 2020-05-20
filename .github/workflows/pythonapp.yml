@@ -33,8 +33,9 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Download EAST text detection model
       run: |
-        wget -P molrec/molecule_detection/ https://www.dropbox.com/s/dl/r2ingd0l3zt8hxs/frozen_east_text_detection.tar.gz
-        tar -C molrec/molecule_detection/ -xvf frozen_east_text_detection.tar.gz
+        wget -P molrec/molecule_detection/ -nv https://www.dropbox.com/s/dl/r2ingd0l3zt8hxs/frozen_east_text_detection.tar.gz
+        tar -C molrec/molecule_detection/ -xvf molrec/molecule_detection/frozen_east_text_detection.tar.gz
+        rm molrec/molecule_detection/frozen_east_text_detection.tar.gz
     - name: Test with pytest
       run: |
         pytest
