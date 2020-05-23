@@ -3,7 +3,7 @@
 """
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -125,10 +125,11 @@ class ShapeImage(np.ndarray):
             text: str,
             pos: utils.PixelCoord,
             font: int = cv2.FONT_HERSHEY_SIMPLEX,
-            font_scale: int = 1,
+            font_scale: float = 1.,
             font_colour: utils.RGBColour = (0, 0, 0),
+            thickness: int = 1,
             **kwargs
-    ) -> ShapeImage:
+    ) -> Tuple[int, int]:
         """
         Adds `text` to the image.
 
@@ -138,16 +139,18 @@ class ShapeImage(np.ndarray):
             font:
             font_scale:
             font_colour:
+            thickness: Text line thickness.
             kwargs: Extra arguments for cv2.putText.
 
         Returns:
-            ShapeImage.
+            Tuple of text width and height.
 
         """
         cv2.putText(
-            self, text, pos, font, font_scale, *reversed(font_colour), **kwargs
+            self, text, pos, font, font_scale, tuple(reversed(font_colour)),
+            thickness, **kwargs
         )
-        return self
+        return cv2.getTextSize(text, font, font_scale, thickness)[0]
 
     def add_line(
             self,
