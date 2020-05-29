@@ -11,26 +11,6 @@ class DetectionError(Exception):
     """General exception for problems during feature detection."""
 
 
-def detect_corners(
-        image: np.ndarray,
-        max_corners: int = 1000,
-        quality_level: float = 0.3,
-        min_distance: int = 10
-) -> np.ndarray:
-    """
-    Detects vertices in the given `image`.
-    """
-    corners = cv2.goodFeaturesToTrack(
-        image,
-        maxCorners=max_corners,
-        qualityLevel=quality_level,
-        minDistance=min_distance
-    )
-    if corners is None:
-        raise DetectionError('No vertices detected in image.')
-    return np.around(corners).astype('int64')
-
-
 def test_coords_close(
         a: Tuple[int, int],
         b: Tuple[int, int],
