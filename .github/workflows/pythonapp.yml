@@ -40,7 +40,7 @@ jobs:
         rm molrec/molecule_detection/frozen_east_text_detection.tar.gz
     - name: Test with pytest
       run: |
-        pytest --cov=pepfrag --cov-report=xml
+        pytest --cov=molrec --cov-report=xml
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
